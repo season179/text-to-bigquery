@@ -24,7 +24,7 @@ def test_health_check():
     print_section("Testing Health Check")
     
     try:
-        response = requests.get(f"{BASE_URL}/health")
+        response = requests.get(f"{BASE_URL}/health", timeout=60)
         response.raise_for_status()
         
         print("✅ Health check successful")
@@ -44,7 +44,7 @@ def test_schema_endpoints():
     # Test getting the schema (should be empty)
     try:
         print("Getting current schema...")
-        response = requests.get(f"{BASE_URL}/schema")
+        response = requests.get(f"{BASE_URL}/schema", timeout=60)
         response.raise_for_status()
         print("✅ Successfully retrieved schema")
     except Exception as e:
@@ -96,8 +96,8 @@ def test_schema_endpoints():
             json={
                 "schema_data": test_schema,
                 "overwrite": True
-            }
-        )
+            }, 
+        timeout=60)
         response.raise_for_status()
         print("✅ Successfully updated schema")
         print("Response:")
@@ -111,7 +111,7 @@ def test_schema_endpoints():
     # Get the updated schema
     try:
         print("\nGetting updated schema...")
-        response = requests.get(f"{BASE_URL}/schema")
+        response = requests.get(f"{BASE_URL}/schema", timeout=60)
         response.raise_for_status()
         print("✅ Successfully retrieved updated schema")
         print("Schema:")
@@ -136,8 +136,8 @@ def test_generate_sql():
         print("Generating SQL...")
         response = requests.post(
             f"{BASE_URL}/generate-sql",
-            json=test_query
-        )
+            json=test_query, 
+        timeout=60)
         response.raise_for_status()
         
         print("✅ Successfully generated SQL")
