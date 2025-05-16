@@ -4,30 +4,36 @@ This document outlines the tasks and subtasks required to develop the BigQuery T
 
 ## Phase 1: Foundation (Week 1-2)
 
-- [ ] **Task 1: Project Setup & FastAPI Framework**
-  - [ ] Subtask 1.1: Initialize a Python 3.11 project.
-  - [ ] Subtask 1.2: Install FastAPI, uvicorn, and other initial dependencies.
-  - [ ] Subtask 1.3: Create the basic FastAPI application structure (`main.py`, routers, etc.).
-  - [ ] Subtask 1.4: Implement the health check endpoint (`GET /api/v1/health`).
-  - [ ] Subtask 1.5: Set up basic structured logging for the application.
-- [ ] **Task 2: API Endpoint Design & Pydantic Models**
-  - [ ] Subtask 2.1: Define Pydantic models for the request and response of `POST /api/v1/generate-sql`.
-  - [ ] Subtask 2.2: Define Pydantic models for the request and response of `PUT /api/v1/schema`.
-  - [ ] Subtask 2.3: Create stub implementations for these API endpoints in FastAPI.
-- [ ] **Task 3: Schema Storage Design**
-  - [ ] Subtask 3.1: Define the JSON format for storing schema information (tables, columns, relationships, descriptions, sample data) as per PRD sections 5.1 and 5.2.
-  - [ ] Subtask 3.2: Select and configure an in-memory store with persistence (e.g., Redis).
+- [X] **Task 1: Project Setup & FastAPI Framework**
+  - [X] Subtask 1.1: Initialize a Python 3.11 project.
+  - [X] Subtask 1.2: Install FastAPI, uvicorn, and other initial dependencies.
+  - [X] Subtask 1.3: Create the basic FastAPI application structure (`main.py`, routers, etc.).
+  - [X] Subtask 1.4: Implement the health check endpoint (`GET /api/v1/health`).
+  - [X] Subtask 1.5: Set up basic structured logging for the application.
+- [X] **Task 2: API Endpoint Design & Pydantic Models**
+  - [X] Subtask 2.1: Define Pydantic models for the request and response of `POST /api/v1/generate-sql`.
+  - [X] Subtask 2.2: Define API request/response models for schema endpoints (e.g., `MessageResponse` for status, `SchemaListResponse` for listing files, plain text for DDL content). Note: The `PUT /api/v1/schema/{schema_name}` endpoint will primarily handle plain text DDL as request body.
+  - [X] Subtask 2.3: Create stub implementations for these API endpoints in FastAPI.
+- [X] **Task 3: Schema Storage Design (DDL Files)**
+  - [X] Subtask 3.1: Establish that database schemas will be stored as Data Definition Language (DDL) in `.sql` files.
+  - [X] Subtask 3.2: Create and configure the `knowledge/` directory for storing these `.sql` schema files.
 - [ ] **Task 4: Qwen3 Container Communication Protocol**
   - [ ] Subtask 4.1: Define the exact request/response contract for communicating with the Qwen3 container (likely via Ollama).
   - [ ] Subtask 4.2: Draft a preliminary client module to send a test request to a (mocked) Qwen3 service.
 
 ## Phase 2: Core Functionality (Week 3-4)
 
-- [ ] **Task 5: Schema Management Implementation**
-  - [ ] Subtask 5.1: Implement the `PUT /api/v1/schema` endpoint logic:
-    - [ ] Validate incoming schema data against the defined format.
-    - [ ] Store/update schema components in the chosen storage solution (e.g., Redis).
-  - [ ] Subtask 5.2: Implement functions to retrieve and format schema information for use in prompt engineering.
+- [X] **Task 5: Schema Management Implementation (DDL Files)**
+  - [X] Subtask 5.1: Implement the `PUT /api/v1/schema/{schema_name}` endpoint:
+    - [X] Accept schema name as path parameter and DDL content as plain text request body.
+    - [X] Implement logic to save the DDL content to a `.sql` file in the `knowledge/` directory (handle overwrite flag).
+  - [X] Subtask 5.2: Implement the `GET /api/v1/schema/{schema_name}` endpoint:
+    - [X] Retrieve and return the DDL content from the specified `.sql` file as plain text.
+  - [X] Subtask 5.3: Implement the `GET /api/v1/schema/` endpoint (root of schema path):
+    - [X] List all available `.sql` schema files in the `knowledge/` directory.
+  - [X] Subtask 5.4: Implement the `DELETE /api/v1/schema/{schema_name}` endpoint:
+    - [X] Delete the specified `.sql` schema file from the `knowledge/` directory.
+  - [ ] Subtask 5.5: Implement functions/logic to read DDL files from the `knowledge/` directory and parse/extract necessary schema information (tables, columns, types, and potentially descriptions from comments) for use in prompt engineering.
 - [ ] **Task 6: Qwen3 Client Implementation**
   - [ ] Subtask 6.1: Develop the `Qwen3 Client` component to robustly communicate with the actual Qwen3 container using Ollama.
   - [ ] Subtask 6.2: Implement secure handling of connection details for the Qwen3 service (e.g., via environment variables).
@@ -53,8 +59,8 @@ This document outlines the tasks and subtasks required to develop the BigQuery T
 ## Phase 3: Testing and Refinement (Week 5-6)
 
 - [ ] **Task 10: Unit Testing Suite**
-  - [ ] Subtask 10.1: Write unit tests for API endpoints, mocking dependencies like the LLM and schema store.
-  - [ ] Subtask 10.2: Write unit tests for the schema management logic (storage, retrieval, validation).
+  - [ ] Subtask 10.1: Write unit tests for API endpoints, mocking dependencies like the LLM and file system operations for schema storage in the `knowledge/` directory.
+  - [ ] Subtask 10.2: Write unit tests for the schema management logic (DDL file storage, retrieval, deletion, listing from the `knowledge/` directory).
   - [ ] Subtask 10.3: Write unit tests for the Qwen3 client, mocking Ollama/Qwen3 container responses.
   - [ ] Subtask 10.4: Write unit tests for SQL validation components.
   - [ ] Subtask 10.5: Write unit tests for error handling mechanisms across different components.
@@ -87,7 +93,7 @@ This document outlines the tasks and subtasks required to develop the BigQuery T
   - [ ] Subtask 17.2: Measure and document conversion accuracy and benchmark response times under various simulated load conditions.
 - [ ] **Task 18: Documentation Creation**
   - [ ] Subtask 18.1: Generate and refine API documentation (utilizing FastAPI's auto-generated docs and supplementing with usage examples and explanations).
-  - [ ] Subtask 18.2: Write comprehensive deployment documentation (instructions for running the container, required environment variables, dependencies on other services like Qwen3 and Redis).
+  - [ ] Subtask 18.2: Write comprehensive deployment documentation (instructions for running the container, required environment variables, dependencies on other services like Qwen3, and notes on managing the `knowledge/` directory for DDL schema files).
   - [ ] Subtask 18.3: Prepare handover documentation covering architecture, key components, and maintenance guidelines.
 - [ ] **Task 19: Final Review, Optimization, and Cleanup**
   - [ ] Subtask 19.1: Conduct thorough code reviews.

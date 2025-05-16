@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    environment:
+      # - REDIS_URL=redis://redis:6379/0  # Removed Redis dependency
+    # depends_on:
+    #   - redis  # Removed Redis dependency
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    networks:
+      - app-network
+
+  # Uncomment this section if you want to run Qwen3 with Ollama in Docker
+  # ollama:
+  #   image: ollama/ollama:latest
+  #   ports:
+  #     - "11434:11434"
+  #   volumes:
+  #     - ollama_data:/root/.ollama
+  #   networks:
+  #     - app-network
+  #   command: >
+  #     sh -c "ollama pull qwen:7b && ollama serve"
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  # redis_data:  # Removed Redis data volume
+  # ollama_data:

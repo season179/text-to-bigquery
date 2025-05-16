@@ -37,10 +37,26 @@ This document outlines requirements for a Python-based microservice API that con
 - **Request Body**: Query text and optional context
 - **Response**: SQL query string and confidence score
 
-#### `PUT /api/v1/schema`
-- Updates database schema information
-- **Request Body**: Table definitions, relationships, descriptions, samples
-- **Response**: Success status and processing metrics
+#### `PUT /api/v1/schema/{schema_name}`
+- Uploads or updates a DDL schema file.
+- **Path Parameter**: `schema_name` (e.g., 'my_database').
+- **Request Body**: Plain text DDL content (e.g., `CREATE TABLE ...`).
+- **Query Parameter**: `overwrite` (boolean, optional).
+- **Response**: Success status message.
+
+#### `GET /api/v1/schema/`
+- Lists all available DDL schema files.
+- **Response**: List of schema names (e.g., `["my_database.sql", "sales_schema.sql"]`).
+
+#### `GET /api/v1/schema/{schema_name}`
+- Retrieves the DDL content of a specific schema file.
+- **Path Parameter**: `schema_name`.
+- **Response**: Plain text DDL content.
+
+#### `DELETE /api/v1/schema/{schema_name}`
+- Deletes a specific DDL schema file.
+- **Path Parameter**: `schema_name`.
+- **Response**: Success status message.
 
 #### `GET /api/v1/health`
 - Health check endpoint
@@ -54,9 +70,9 @@ This document outlines requirements for a Python-based microservice API that con
 - Store sample data for better LLM context
 
 ### 5.2 Schema and Relationship Storage
-- Store all schema components (tables, relationships, descriptions) in Redis or similar in-memory store with persistence
-- Use consistent JSON format for storage structure
-- Include relationship mappings explicitly
+- Store all schema components as Data Definition Language (DDL) statements within `.sql` files.
+- These `.sql` files will reside in a dedicated `knowledge/` directory within the project.
+- Relationships, if not part of the DDL (e.g., foreign keys), should be documented within the DDL comments or a separate conventions document.
 
 ### 5.3 Descriptions and Context
 Each table and column should include:
@@ -128,7 +144,7 @@ Each table and column should include:
 
 ### 10.1 Unit Tests
 - Test endpoint functionality with mocked LLM responses
-- Verify schema storage and retrieval
+- Verify DDL schema file storage (creation, update, deletion) and retrieval from the `knowledge/` directory.
 - Test error handling for all expected failure modes
 - Validate SQL parsing and verification
 
@@ -170,7 +186,7 @@ Each table and column should include:
 ### 12.1 Phase 1: Foundation (Week 1-2)
 - Set up FastAPI framework with Python 3.11
 - Implement basic endpoint structure
-- Design schema storage format
+- Design schema storage using DDL `.sql` files in the `knowledge/` directory.
 - Create communication protocol with Qwen3 container
 
 ### 12.2 Phase 2: Core Functionality (Week 3-4)
