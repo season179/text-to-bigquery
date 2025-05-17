@@ -1,4 +1,8 @@
 from fastapi import FastAPI, Body
+from dotenv import load_dotenv
+
+# Load environment variables at application startup
+load_dotenv()
 
 app = FastAPI(title="BigQuery API")
 
