@@ -181,3 +181,5 @@ cython_debug/
 .cursorindexingignore
 
 knowledge/
+
+**/.claude/settings.local.json
