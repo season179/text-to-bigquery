@@ -2,10 +2,10 @@ import os
 from typing import Dict, Optional, Any, List
 
 import ollama
-import requests
 from pydantic import BaseModel
 
 from app.config import OLLAMA_MODEL, OLLAMA_HOST, OLLAMA_TIMEOUT
+from security import safe_requests
 
 class OllamaResponse(BaseModel):
     response: str
@@ -85,7 +85,7 @@ class OllamaClient:
         """
         try:
             # Try to hit the Ollama API list endpoint to check if it's up
-            response = requests.get(f"{self.base_url}/api/tags", timeout=self.timeout)
+            response = safe_requests.get(f"{self.base_url}/api/tags", timeout=self.timeout)
             response.raise_for_status()
             
             # Check if the model is in the list of available models
